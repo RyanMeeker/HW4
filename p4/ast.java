@@ -237,14 +237,6 @@ class FormalsListNode extends ASTnode {
         myFormals = S;
     }
 
-/*    public List<String> nameAnalysis(SymTab symtab){
-        List<String> types = new ArrayList<String>();
-        for(FormalDeclNode formal : myFormals){  
-            Sym sym = formal.nameAnalysis(symtab);
-            types.add(sym.getType());
-        }
-        return types;
-    }*/
 
 
 	public void nameAnalysis(SymTab symtab, FnSym sym) {
@@ -443,7 +435,7 @@ class FnDeclNode extends DeclNode {
 	try {
 	    symtab.removeScope();
 	} catch (SymTabEmptyException e) { 
-	    ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "EmptyException in FnNode2");
+	    ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "EmptyException in FnNode when removing scope");
 	}
     }
     // 4 children
@@ -465,15 +457,15 @@ class FormalDeclNode extends DeclNode {
         myId.unparse(p, 0);
     }
     public void nameAnalysis(SymTab symtab, FnSym fnsym){
-	if(myType instanceof VoidNode){
-		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Non-function declared void");
-		return;
-	}
-	else {
 	    try{
 		Sym sym = symtab.lookupLocal(myId.getStrVal()); // Check for duplicates
+
+		if(myType instanceof VoidNode){
+			ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Non-function declare void");
+		}
 		
 		sym = new Sym(myType.toString()); // create new sym and add to Decl
+
 		symtab.addDecl(myId.getStrVal(), sym);
 		
 		fnsym.addFormals(myType.toString());
@@ -483,7 +475,6 @@ class FormalDeclNode extends DeclNode {
 	    } catch (SymTabEmptyException e) {
 		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "FormalDeclNode Exception");
 	    } 
-	}
 
 }		
     // two children
