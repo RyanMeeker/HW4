@@ -1,4 +1,29 @@
-void x;
+//record Point pt;
 
-integer y;
-integer y;
+//integer a;
+//a = 5;
+
+//integer a;
+//integer a;
+
+//void x;
+
+//integer y;
+//void y;
+
+//void fuckthisclass;
+
+//boolean c;
+//void c;
+
+void g(integer c, integer c){
+	integer a;
+	integer a;
+
+	void b;
+}
+
+void g(){
+}
+
+
