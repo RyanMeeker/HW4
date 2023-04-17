@@ -133,7 +133,7 @@ class ProgramNode extends ASTnode {
     // one child
     private DeclListNode myDeclList;
 
-    public void nameAnalysis() throws SymDuplicationException, SymTabEmptyException{
+    public void nameAnalysis(){
         SymTab symtab = new SymTab();
         myDeclList.nameAnalysis(symtab);
     }
@@ -159,19 +159,24 @@ class DeclListNode extends ASTnode {
     // list of children (DeclNodes)
     private List<DeclNode> myDecls;
 
-    public void nameAnalysis(SymTab symtab) throws SymDuplicationException, SymTabEmptyException {     
+    public void nameAnalysis(SymTab symtab){     
             
         for(DeclNode decl : myDecls){
             if(decl instanceof VarDeclNode) {
                 ((VarDeclNode)decl).nameAnalysis(symtab);
-            } else if((decl instanceof FnDeclNode)){
+            } /*
+	    else if((decl instanceof FnDeclNode)){
                 ((FnDeclNode)decl).nameAnalysis(symtab);
-            } else if((decl instanceof FormalDeclNode)){
+            } 
+	    else if((decl instanceof FormalDeclNode)){
                 ((FormalDeclNode)decl).nameAnalysis(symtab);
-            } else if((decl instanceof RecordDeclNode)){
+            } 
+	    else if((decl instanceof RecordDeclNode)){
                 ((RecordDeclNode)decl).nameAnalysis(symtab);
-            } else {
-                decl.nameAnalysis(symtab);
+            }*/
+	    else {
+		System.out.println("Not any child of delnode");
+                System.exit(-1);
             }
         }
     }
@@ -189,12 +194,12 @@ class StmtListNode extends ASTnode {
         }      
     }
 
-    public void nameAnalysis(SymTab symtab){
+/*    public void nameAnalysis(SymTab symtab){
         for(StmtNode stmt : myStmts){
             stmt.nameAnalysis(symtab);
         }
     }
-
+*/
     // list of children (StmtNodes)
     private List<StmtNode> myStmts;
 }
@@ -203,13 +208,13 @@ class ExpListNode extends ASTnode {
     public ExpListNode(List<ExpNode> S) {
         myExps = S;
     }
-
+/*
     public void nameAnalysis(SymTab symtab){
         for(ExpNode exp : myExps){
             exp.nameAnalysis(symtab);
         }
     }
-
+*/
     public void unparse(PrintWriter p, int indent) {
         Iterator<ExpNode> it = myExps.iterator();
         if (it.hasNext()) { // if there is at least one element
@@ -228,6 +233,7 @@ class FormalsListNode extends ASTnode {
     public FormalsListNode(List<FormalDeclNode> S) {
         myFormals = S;
     }
+/*
 
     public List<String> nameAnalysis(SymTab symtab){
         List<String> types = new ArrayList<String>();
@@ -237,6 +243,8 @@ class FormalsListNode extends ASTnode {
         }
         return types;
     }
+*/
+
 
     public void unparse(PrintWriter p, int indent) {
         Iterator<FormalDeclNode> it = myFormals.iterator();
@@ -263,6 +271,10 @@ class FnBodyNode extends ASTnode {
         myDeclList.unparse(p, indent);
         myStmtList.unparse(p, indent);
     }
+    public void nameAnalysis(SymTab symtab){
+        
+    }
+
 
     // two children
     private DeclListNode myDeclList;
@@ -301,16 +313,27 @@ class VarDeclNode extends DeclNode {
     public static int NON_RECORD = -1;
 
     public Sym nameAnalysis(SymTab symtab){
-        boolean badDecl = false;
-        String name = myId.getStrVal();
+        // String name = myId.getStrVal();
         IdNode recordId = null;
         Sym recordSym = null;
-
         if(myType instanceof VoidNode){
             ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Non-function declared void");
-        } else if(myType instanceof RecordNode){  
+	    System.exit(-1);
+        } 
+	
+	else if(myType instanceof RecordNode){ 
+            System.out.println("AFter Void call");
+
             recordId = ((RecordNode)myType).getIdNode();
-            try { 
+	    recordSym = new Sym("record", "var");
+	}
+	else { //has to be void, string, etc.
+	    System.out.println("AFter Void call");
+
+	    recordSym = new Sym(myType.toString(), "var"); 
+	}
+            try {
+		System.out.println("After Void in Try"); 
                 Sym globalSym = symtab.lookupGlobal(recordId.getStrVal());
                 if(globalSym == null){
                     ErrMsg.fatal(recordId.getLineNum(), recordId.getCharNum(), "Record type is invalid (not in global lookup)");
@@ -320,9 +343,6 @@ class VarDeclNode extends DeclNode {
             } catch(SymTabEmptyException e) {
                 ErrMsg.fatal(recordId.getLineNum(), recordId.getCharNum(), "SymTabEmptyException thrown");
             }
-
-            recordSym = new Sym("var", "record");
-
             try {
                 Sym localSym = symtab.lookupLocal(recordId.getStrVal());
                 if(localSym != null){
@@ -335,11 +355,9 @@ class VarDeclNode extends DeclNode {
             } catch(SymTabEmptyException e1){
                 ErrMsg.fatal(recordId.getLineNum(), recordId.getCharNum(), "SymTabEmptyException thrown in varDeclNode");
             }
-        }
         return recordSym;
-    }
+	}
 }
-
 class FnDeclNode extends DeclNode {
     public FnDeclNode(TypeNode type,
                       IdNode id,
@@ -413,6 +431,7 @@ class RecordDeclNode extends DeclNode {
 // **********************************************************************
 
 abstract class TypeNode extends ASTnode {
+    //abstract public String getType();
 }
 
 class BoolNode extends TypeNode {
@@ -422,14 +441,22 @@ class BoolNode extends TypeNode {
     public void unparse(PrintWriter p, int indent) {
         p.print("boolean");
     }
+
+    public String toString() {
+        return "boolean";
+    }
 }
 
 class IntNode extends TypeNode {
+
     public IntNode() {
     }
 
     public void unparse(PrintWriter p, int indent) {
         p.print("integer");
+    }
+    public String toString() {
+        return "integer";
     }
 }
 
@@ -1044,3 +1071,4 @@ class OrNode extends BinaryExpNode {
         p.print(")");
     }
 }
+
