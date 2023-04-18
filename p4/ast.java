@@ -1043,7 +1043,64 @@ class DotAccessExpNode extends ExpNode {
         myId.unparse(p, 0);
     }
 
-    public void nameAnalysis(SymTab symtab){}
+    public void nameAnalysis(SymTab symtab){
+	myLoc.nameAnalysis(symtab);
+
+	SymTab symtab = null;
+	Sym sym = null;
+
+       if (myLoc instanceof IdNode) {
+            sym = ((IdNode)myLoc).getSym();
+            // If it is null then return
+            if (sym == null) {
+                return;
+            } 
+	    else if (sym instanceof RecordDeclSym) { 
+                // if sym is a StructDeclSym, get the symTable for it
+                recSymTab = ((RecordDeclSym)sym).getBody().getTab(); //TODO: Look into this
+            } else {
+                ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Dot-access of non-record type");
+                return;
+            }
+	}
+	else if (myLoc instanceof DotAccessExpNode) {
+		sym = ((DotAccessExpNode)myLoc.getSym());
+		if (sym = null) {
+			ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Dot-access of non-record type");
+			return;
+		}
+		else {
+			if (sym instanceof RecordDefSym) {
+				recordTab = ((RecordDefSym)sym).getTab();
+			}
+			else{
+				ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Dot-access of non-record type");
+				return;
+			}
+		}
+	} 
+	else {
+	    System.err.println("Unexpected node type in LHS of dot-access");
+            System.exit(-1);
+	}
+
+	sym = recordTab.lookupGlobal(myId.getStrVal());
+	if (sym == null) {
+            ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Invalid struct field name");
+        } else {
+            // Link the symbol
+            myId.addLink(sym);
+            // If the RHS is a struct, we want to do chained access
+            if (sym instanceof RecordDeclSym) {
+                // store the previous sym
+                prev = ((RecordDeclSym)sym).getBody();
+            } 
+        }
+	}
+
+    public Sym getSym(){
+	return prev;
+}
     // two children
     private ExpNode myLoc;    
     private IdNode myId;
