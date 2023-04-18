@@ -1,6 +1,6 @@
 import java.io.*;
 import java.util.*;
-//added code:
+//fadded cdode:
 // **********************************************************************
 // The ASTnode class defines the nodes of the abstract-syntax tree that
 // represents a brevis program.
@@ -159,11 +159,15 @@ class DeclListNode extends ASTnode {
     // list of children (DeclNodes)
     private List<DeclNode> myDecls;
 
-    public void nameAnalysis(SymTab symtab){     
+    public void nameAnalysis(SymTab symtab){
+	this.nameAnalysis(symtab, symtab);
+	}
+
+    public void nameAnalysis(SymTab symtab, SymTab globalSymTab){     
         for(DeclNode decl : myDecls){
             if(decl instanceof VarDeclNode) {
-                ((VarDeclNode)decl).nameAnalysis(symtab);
-            } 
+                ((VarDeclNode)decl).nameAnalysis(symtab, globalSymTab);
+            }
 	    else if((decl instanceof FnDeclNode)){
                 ((FnDeclNode)decl).nameAnalysis(symtab);
             }  
@@ -282,7 +286,8 @@ class FnBodyNode extends ASTnode {
 // **********************************************************************
 
 abstract class DeclNode extends ASTnode {
-    //include abstract method to avoid casting 
+    //include abstract method to avoid casting
+    //abstract public void nameAnaylsis(SymTab symtab); 
 }
 
 class VarDeclNode extends DeclNode {
@@ -306,8 +311,8 @@ class VarDeclNode extends DeclNode {
     private int mySize;  // use value NON_RECORD if this is not a record type
 
     public static int NON_RECORD = -1;
-
-    public void nameAnalysis(SymTab symtab){
+ 
+    public void nameAnalysis(SymTab symtab, SymTab globalSymTab){
 	Sym sym = null;
 	IdNode recordId = null;
 	boolean multDecl = false;
@@ -326,9 +331,10 @@ class VarDeclNode extends DeclNode {
 		multDecl = true;
  		return;  
 	}  
-} catch(SymTabEmptyException e){
-	ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Unexpected SymTabEmptyException thrown");
-}       
+	} catch(SymTabEmptyException e){
+		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Unexpected SymTabEmptyException thrown");
+	}
+
 	
 	//check for void
 	if(myType instanceof VoidNode){
@@ -338,7 +344,14 @@ class VarDeclNode extends DeclNode {
 		recordId = ((RecordNode)myType).getIdNode();
 		//global lookup to make sure that record type has alread been declared
 		try{
-		sym = symtab.lookupGlobal(recordId.getStrVal());
+		sym = globalSymTab.lookupGlobal(recordId.getStrVal());
+		System.out.println("VarDeclNode global lookup on");
+		System.out.println("Looking up: " + recordId.getStrVal()); 
+		System.out.println("In : "); 
+		globalSymTab.print();
+		if(sym != null){
+			System.out.println("Resulting sym: " + sym.toString());
+		}
 		//if the record type has not already been declared then error out
 		if(sym == null || !(sym instanceof RecordDefSym)){
 			ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Invalid name of record type");
@@ -347,13 +360,15 @@ class VarDeclNode extends DeclNode {
 	
 		} catch(SymTabEmptyException e){
 			ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Unexpected SymTabEmptyException thrown");
-		} 
+			}
+		
+		 
 	}
 
 	if(multDecl == false){ //good decl
 		try {
 			if(myType instanceof RecordNode){
-				sym = new RecordDeclSym((RecordDefSym)(symtab.lookupGlobal(recordId.toString())), recordId.toString());
+				sym = new RecordDeclSym((RecordDefSym)(globalSymTab.lookupGlobal(recordId.getStrVal())), recordId.getStrVal());
 				sym.setName(myId.getStrVal());
 			} else {
 				sym = new Sym(myType.toString());
@@ -448,6 +463,8 @@ class FormalDeclNode extends DeclNode {
 		
 		sym = new Sym(myType.toString()); // create new sym and add to Decl
 
+		System.out.println("myId.toString(): " + myId.toString());
+
 		symtab.addDecl(myId.getStrVal(), sym);
 		
 		fnsym.addFormals(myType.toString());
@@ -484,26 +501,36 @@ class RecordDeclNode extends DeclNode {
 	try{
 // a recommended approach is to have a separate symbol table associated with each record definition 
 // and to store this symbol table in the symbol for the name of the record type.
+		System.out.println("Entering into RecDeclNode name Analysis");
+		System.out.println("symtab = ");
+		symtab.print();
+		
+		String name = myId.getStrVal();
+		System.out.println("Name: " + name);
 
-		Sym sym = symtab.lookupLocal(myId.getStrVal()); // Check for duplicates
+		Sym sym = symtab.lookupLocal(myId.getStrVal()); // Check for duplicates		
 		// if no duplicates, create a new symtab for this record
 		SymTab newSymTab = new SymTab( ); // create new sym 
 
-		//TODO: Store in sym for record's name	
+		//Store in sym for record's name	
 
 		// call nameAnalysis on decllist so that it runs on each declnode
-		myDeclList.nameAnalysis(newSymTab); //Already checking for global symtab. 
+		myDeclList.nameAnalysis(newSymTab, symtab); //Already checking for global symtab. 
 		// TODO: confirm global symTab lookup works as intended. Possibly move to DeclList check
-
 		// Make sure field is not in record's symTab
                 RecordDefSym recordefsym = new RecordDefSym(newSymTab, myId.getStrVal());
+//		System.out.print("RecordDefSym:");	
+		recordefsym.print();		
 		// Finally, add symtab
-		symtab.addDecl(myId.getStrVal(), recordefsym);
+		symtab.addDecl(name, recordefsym);
+		System.out.println("SymTab after addDecl for record");
+		newSymTab.print();
+		
 
 	} catch (SymDuplicationException e){
 		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Identifier multiply-declared");
 	} catch (SymTabEmptyException e) {
-		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "FormalDeclNode Exception");
+		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "SymTab Empty Exception");
 	    	} 
 	}
  
@@ -1021,6 +1048,7 @@ class DotAccessExpNode extends ExpNode {
     public DotAccessExpNode(ExpNode loc, IdNode id) {
         myLoc = loc;    
         myId = id;
+	prev = null;   
     }
 
     // **** unparse ****
@@ -1032,34 +1060,38 @@ class DotAccessExpNode extends ExpNode {
     }
 
     public void nameAnalysis(SymTab symtab){
-	myLoc.nameAnalysis(symtab);
+	    System.out.println("Entering DotNameAnalysis: LocalSym");
+	    if(symtab != null){
+		    symtab.print();
+	    }
+	    myLoc.nameAnalysis(symtab);
 
-	SymTab symtab = null;
+	SymTab futureTab = null;
 	Sym sym = null;
 
        if (myLoc instanceof IdNode) {
-            sym = ((IdNode)myLoc).getSym();
+            sym = ((IdNode)myLoc).getSymLink();
             // If it is null then return
             if (sym == null) {
                 return;
             } 
 	    else if (sym instanceof RecordDeclSym) { 
                 // if sym is a StructDeclSym, get the symTable for it
-                recSymTab = ((RecordDeclSym)sym).getBody().getTab(); //TODO: Look into this
+                futureTab = ((RecordDeclSym)sym).getBody().getSymTab(); //TODO: Look into this
             } else {
                 ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Dot-access of non-record type");
                 return;
             }
 	}
 	else if (myLoc instanceof DotAccessExpNode) {
-		sym = ((DotAccessExpNode)myLoc.getSym());
-		if (sym = null) {
+		sym = ((DotAccessExpNode)myLoc).getSym();
+		if (sym == null) {
 			ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Dot-access of non-record type");
 			return;
 		}
 		else {
 			if (sym instanceof RecordDefSym) {
-				recordTab = ((RecordDefSym)sym).getTab();
+				futureTab = ((RecordDefSym)sym).getSymTab();
 			}
 			else{
 				ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Dot-access of non-record type");
@@ -1072,12 +1104,17 @@ class DotAccessExpNode extends ExpNode {
             System.exit(-1);
 	}
 
-	sym = recordTab.lookupGlobal(myId.getStrVal());
+	try{
+		sym = futureTab.lookupGlobal(myId.getStrVal());
+	} catch(SymTabEmptyException e) {
+		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Unexpected SymTabEmptyException thrown in DotAccessExpNode");
+	}
+	//sym = futureTab.lookupGlobal(myId.getStrVal());
 	if (sym == null) {
             ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Invalid struct field name");
         } else {
             // Link the symbol
-            myId.addLink(sym);
+            myId.setSymLink(sym);
             // If the RHS is a struct, we want to do chained access
             if (sym instanceof RecordDeclSym) {
                 // store the previous sym
@@ -1092,6 +1129,7 @@ class DotAccessExpNode extends ExpNode {
     // two children
     private ExpNode myLoc;    
     private IdNode myId;
+    private Sym prev;
 }
 
 class AssignExpNode extends ExpNode {
