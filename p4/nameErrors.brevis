@@ -1,29 +1,31 @@
-//record Point pt;
+record Point (
+    integer x;
+    integer y;
+);
+boolean Point;
 
-//integer a;
-//a = 5;
-
-//integer a;
-//integer a;
-
-//void x;
-
-//integer y;
-//void y;
-
-//void fuckthisclass;
-
-//boolean c;
-//void c;
-
-void g(integer c, integer c){
+integer y;
+record y(
 	integer a;
-	integer a;
+	integer b;
+);
 
-	void b;
+record dupRecord (
+	boolean b;
+);
+
+void main() {
+
+	/// multiply declared struct
+	record dupRecord dup;
+	record dupRecord dup;
+
+	/// invalid name of struct type
+	record invalidName name;
+
+	/// Dot-access of non struct type
+	i.t = 12;
+
+	/// RHS invalid struct field name
+	struct1.i = 12;
 }
-
-void g(){
-}
-
-

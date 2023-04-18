@@ -168,17 +168,14 @@ class DeclListNode extends ASTnode {
             } 
 	    else if((decl instanceof FnDeclNode)){
                 ((FnDeclNode)decl).nameAnalysis(symtab);
-            } /*
-	    else if((decl instanceof FormalDeclNode)){
-                ((FormalDeclNode)decl).nameAnalysis(symtab);
-            }/* 
+            }  
 	    else if((decl instanceof RecordDeclNode)){
                 ((RecordDeclNode)decl).nameAnalysis(symtab);
             }
 	    else {
 		System.out.println("Not any child of delnode");
                 System.exit(-1);
-            }*/
+            }
         }
     }
 }
@@ -506,7 +503,34 @@ class RecordDeclNode extends DeclNode {
         doIndent(p, indent);
         p.println(");\n");
     }
-   // public void nameAnalysis(SymTab symtab, 
+
+    public void nameAnalysis(SymTab symtab){
+	try{
+// a recommended approach is to have a separate symbol table associated with each record definition 
+// and to store this symbol table in the symbol for the name of the record type.
+
+		Sym sym = symtab.lookupLocal(myId.getStrVal()); // Check for duplicates
+		// if no duplicates, create a new symtab for this record
+		SymTab newSymTab = new SymTab( ); // create new sym 
+
+		//TODO: Store in sym for record's name	
+
+		// call nameAnalysis on decllist so that it runs on each declnode
+		myDeclList.nameAnalysis(newSymTab); //Already checking for global symtab. 
+		// TODO: confirm global symTab lookup works as intended. Possibly move to DeclList check
+
+		// Make sure field is not in record's symTab
+                RecordDefSym recordefsym = new RecordDefSym(newSymTab, myId.getStrVal());
+		// Finally, add symtab
+		symtab.addDecl(myId.getStrVal(), recordefsym);
+
+	} catch (SymDuplicationException e){
+		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Identifier multiply-declared");
+	} catch (SymTabEmptyException e) {
+		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "FormalDeclNode Exception");
+	    	} 
+	}
+ 
     // two children
     private IdNode myId;
     private DeclListNode myDeclList;
