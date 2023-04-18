@@ -1,0 +1,38 @@
+
+//bad record type def
+record Point pt;
+
+//non-function void
+void x;
+
+//should throw void error then multiply declared error
+integer y;
+void y;
+
+//should throw void error + mutiply declared error for formals
+void g(integer y, void y){
+
+	//should throw multiply declared for the following variables
+	boolean c;
+	integer c;
+
+	//should throw void+multiply declared for following variables
+	boolean d;
+	void d;
+}
+
+
+//should throw multiply declared because there's a previously declared func g
+void g(boolean c, integer d){
+
+}
+
+boolean f(integer l, integer m){
+	//should throw identifier undeclared error
+	t = 12;
+}
+
+
+
+
+

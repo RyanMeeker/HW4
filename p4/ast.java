@@ -136,7 +136,6 @@ class ProgramNode extends ASTnode {
     public void nameAnalysis(){
         SymTab symtab = new SymTab();
         myDeclList.nameAnalysis(symtab);
-	System.out.println("entering programNode nameanalysis");
     }
 }
 
@@ -161,7 +160,6 @@ class DeclListNode extends ASTnode {
     private List<DeclNode> myDecls;
 
     public void nameAnalysis(SymTab symtab){     
-        System.out.println("Entering declList nameAnalysis");    
         for(DeclNode decl : myDecls){
             if(decl instanceof VarDeclNode) {
                 ((VarDeclNode)decl).nameAnalysis(symtab);
@@ -193,7 +191,6 @@ class StmtListNode extends ASTnode {
     }
 
     public void nameAnalysis(SymTab symtab){
-	System.out.println("entering stmtList analysis");
         for(StmtNode stmt : myStmts){
             stmt.nameAnalysis(symtab);
         }
@@ -209,7 +206,6 @@ class ExpListNode extends ASTnode {
     }
 
     public void nameAnalysis(SymTab symtab){
-	System.out.println("Entering expListNode nameAnalysis");
         for(ExpNode exp : myExps){
             exp.nameAnalysis(symtab);
         }
@@ -237,7 +233,6 @@ class FormalsListNode extends ASTnode {
 
 
 	public void nameAnalysis(SymTab symtab, FnSym sym) {
-		System.out.println("entering formalsListNode nameAnalysis");
 		for (FormalDeclNode fdn : myFormals) {
 			fdn.nameAnalysis(symtab, sym);
 		}
@@ -271,7 +266,6 @@ class FnBodyNode extends ASTnode {
         myStmtList.unparse(p, indent);
     }
     public void nameAnalysis(SymTab symtab){
-	System.out.println("entering fnBody nameAnalysis");
         myDeclList.nameAnalysis(symtab);
 	myStmtList.nameAnalysis(symtab);
     }
@@ -320,9 +314,7 @@ class VarDeclNode extends DeclNode {
 	
 	//check for multiple declarations 
 	try{
-	//System.out.println("myId.getStrVal(): " + myId.getStrVal());
 	sym = symtab.lookupLocal(myId.getStrVal());
-//	System.out.println("###############################ENTERING VARDECL###################################");
 	if(sym != null &&  myType instanceof VoidNode){
 		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Non-function declared void");
 		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Identifier multiply declared");
@@ -349,7 +341,7 @@ class VarDeclNode extends DeclNode {
 		sym = symtab.lookupGlobal(recordId.getStrVal());
 		//if the record type has not already been declared then error out
 		if(sym == null || !(sym instanceof RecordDefSym)){
-			ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Invalid name of struct type");
+			ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Invalid name of record type");
 			return;
 		}
 	
@@ -365,16 +357,10 @@ class VarDeclNode extends DeclNode {
 				sym.setName(myId.getStrVal());
 			} else {
 				sym = new Sym(myType.toString());
-	//			System.out.println("myType.toString(): " +  myType.toString());
 				sym.setName(myId.getStrVal());
 			}
 			//add type current symbolTable
 			symtab.addDecl(myId.getStrVal(), sym);
-	//		System.out.println("myId.toString(): " + myId.toString());
-	//		System.out.println("Sym: " + sym.toString());
-	//		System.out.print("Symtab: "); 
-	//		symtab.print();
-	//		System.out.println("LookupLocal After AddDecl: " + symtab.lookupLocal(myId.getStrVal()));
 
 		} catch (SymDuplicationException e){
 			ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Unexpected SymDuplicationException thrown in VDN");
@@ -412,7 +398,6 @@ class FnDeclNode extends DeclNode {
     }
     public void nameAnalysis(SymTab symtab) {
 	
-	System.out.println("entering fnDeclNode nameAnalysis");
 	Sym sym = new FnSym(myType.toString());
 
 	try { 
@@ -616,7 +601,6 @@ class AssignStmtNode extends StmtNode {
     }
     
     public void nameAnalysis(SymTab symtab){
-	System.out.println("entering assignStmt name analysis");
 	myAssign.nameAnalysis(symtab);
     }
     // one child
@@ -967,6 +951,10 @@ class IdNode extends ExpNode {
 
     public void setSymLink(Sym sym){
         this.symLink = sym;
+    }
+
+    public Sym getSymLink(){
+	    return symLink;
     }
 
     public void nameAnalysis(SymTab symtab) {
