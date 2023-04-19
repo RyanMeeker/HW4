@@ -1,4 +1,0 @@
-record RealRecord(
-    integer u;
-);
-

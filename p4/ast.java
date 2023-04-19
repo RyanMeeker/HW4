@@ -1,6 +1,5 @@
 import java.io.*;
 import java.util.*;
-//fadded cdode:
 ///////////////////////////////////////////////////////////////////////////////
 //                   ALL STUDENTS COMPLETE THESE SECTIONS
 // Title:            P4 Name Analyzer
@@ -354,23 +353,24 @@ class VarDeclNode extends DeclNode {
     public static int NON_RECORD = -1;
  
     public void nameAnalysis(SymTab symtab, SymTab globalSymTab){
+	boolean good = true;
 	Sym sym = null;
 	IdNode recordId = null;
-	boolean multDecl = false;
-	
 	//check for multiple declarations 
 	try{
 	sym = symtab.lookupLocal(myId.getStrVal());
 	if(sym != null &&  myType instanceof VoidNode){
+		good = false;
 		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Non-function declared void");
 		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Identifier multiply-declared");
-		multDecl = true;
-		return;
+	//	return;
 	}
 	if(sym != null){
+		//Here
 		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Identifier multiply-declared");
-		multDecl = true;
- 		return;  
+		
+		good = false;
+ 	//	return;  
 	}  
 	} catch(SymTabEmptyException e){
 		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "SymTabEmptyException Thrown in VarDecl");
@@ -381,17 +381,32 @@ class VarDeclNode extends DeclNode {
 	if(myType instanceof VoidNode){
 		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Non-function declared void");
 		return;
-	} else if(myType instanceof RecordNode){
+	}
+	else if(myType instanceof RecordNode){
 		recordId = ((RecordNode)myType).getIdNode();
 		//global lookup to make sure that record type has alread been declared
 		try{
-		sym = globalSymTab.lookupGlobal(recordId.getStrVal());
-		//globalSymTab.print();
-		//if the record type has not already been declared then error out
-		if(sym == null || !(sym instanceof RecordDefSym)){
-			ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Name of record type invalid");
-			return;
-		}
+		    	sym = globalSymTab.lookupGlobal(recordId.getStrVal());
+		   	//globalSymTab.print();
+		   	//if the record type has not already been declared then error out
+			//
+			if((sym == null || !(sym instanceof RecordDefSym) && good == false)){
+                                ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Name of record type invalid");
+				ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Identifier multiply-declared");
+
+                        } else if(sym == null || !(sym instanceof RecordDefSym)) {
+                                // here
+				ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Name of record type invalid");
+                                //ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Identifier multiply-declared");
+                        }
+		 
+		/*	if(sym == null || !(sym instanceof RecordDefSym)){
+				ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Name of record type invalid");
+		
+			} else if((sym == null || !(sym instanceof RecordDefSym) && good == false)) {
+				ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Name of record type invalid");
+				ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Identifier multiply-declared");
+			}	*/
 	
 		} catch(SymTabEmptyException e){
 			ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "SymTabEmptyException Thrown in VarDecl");
@@ -400,7 +415,7 @@ class VarDeclNode extends DeclNode {
 		 
 	}
 
-	if(multDecl == false){ //good decl
+	if(good){ //good decl
 		try {
 			if(myType instanceof RecordNode){
 				sym = new RecordDeclSym((RecordDefSym)(globalSymTab.lookupGlobal(recordId.getStrVal())), recordId.getStrVal());
@@ -498,7 +513,7 @@ class FormalDeclNode extends DeclNode {
 		
 		sym = new Sym(myType.toString()); // create new sym and add to Decl
 
-		System.out.println("myId.toString(): " + myId.toString());
+		//System.out.println("myId.toString(): " + myId.toString());
 
 		symtab.addDecl(myId.getStrVal(), sym);
 		
@@ -551,7 +566,6 @@ class RecordDeclNode extends DeclNode {
 
 		// call nameAnalysis on decllist so that it runs on each declnode
 		myDeclList.nameAnalysis(newSymTab, symtab); //Already checking for global symtab. 
-		// TODO: confirm global symTab lookup works as intended. Possibly move to DeclList check
 		// Make sure field is not in record's symTab
                 RecordDefSym recordefsym = new RecordDefSym(newSymTab, myId.getStrVal());
 //		System.out.print("RecordDefSym:");	
@@ -1104,9 +1118,9 @@ class DotAccessExpNode extends ExpNode {
     }
 
     public void nameAnalysis(SymTab symtab){
-	    System.out.println("Entering DotNameAnalysis: LocalSym");
+	    //System.out.println("Entering DotNameAnalysis: LocalSym");
 	    if(symtab != null){
-		    symtab.print();
+		   // symtab.print();
 	    }
 	    myLoc.nameAnalysis(symtab);
 
@@ -1155,7 +1169,7 @@ class DotAccessExpNode extends ExpNode {
 	}
 	//sym = futureTab.lookupGlobal(myId.getStrVal());
 	if (sym == null) {
-            ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Invalid struct field name");
+            ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Record field name invalid");
         } else {
             // Link the symbol
             myId.setSymLink(sym);

@@ -29,49 +29,62 @@
 //                   of any information you find.
 //////////////////////////// 80 columns wide //////////////////////////////////
 
-//good record which I'll multiply declare later
-record RealRecord(
-	integer u;
+
+
+integer testInt;
+record Point testInt;
+
+// nameError.brevis
+integer x;
+integer x; // Identifier multiply-declared
+
+void v; // Non-function declared void
+
+integer k;
+void k; // Identifier multiply-declared + Non-function declared void
+
+record Point pt; // Name of record type invalid
+
+record Point (
+    integer w;
+    integer p;
+    integer p; // Identifier multiply-declared
 );
 
-
-//bad record type def
+integer Point;
 //record Point pt;
 
-//non-function void
-//void x;
-
-//multiply declared record
-//record RealRecord rr;
-//record RealRecord rr;
-
-//should throw void error then multiply declared error
-//integer y;
-//void y;
-
-//should throw void error + mutiply declared error for formals
-//void g(integer y, void y){
-
-	//should throw multiply declared for the following variables
-//	boolean c;
-//	integer c;
-
-	//should throw void+multiply declared for following variables
-//	boolean d;
-//	void d;
-//}
+integer f(integer n, boolean n){ } //Identifier multiply declared
 
 
-//should throw multiply declared because there's a previously declared func g
-//void g(boolean c, integer d){
+void g() {
+    integer a;
+    boolean a; // Identifier multiply-declared
+    integer q;
 
-//}
+    record Point p;
+    p.l = a; // Record field name invalid
 
-//boolean f(integer l, integer m){
-	//should throw identifier undeclared error
-//	t = 12;
-//}
+    a.test = 3; // Dot-access of non-record type
 
+    q = u; // Identifier undeclared
+}
+
+void testUndeclaredIdent(){
+	t = 13;
+}
+
+
+//if else
+void ifElse(){
+	integer dup;
+	boolean trueOrFalse;
+	if(trueOrFalse == true){
+	
+	} else {
+		integer dup; //multiply decl
+	}
+}
 
 
 

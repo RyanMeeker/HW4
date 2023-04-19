@@ -3,6 +3,8 @@ record Point(
     integer y;
 );
 
+record Point pt;
+integer l;
 integer f(integer x, boolean b) {
 }
 
@@ -14,5 +16,38 @@ void g() {
     b[boolean] = (a[integer] == 3);
     f[integer,boolean->integer]((a[integer] + ((p[Point]).y[integer] * 2)), b[boolean]);
     g[->void]();
+}
+
+boolean trueOrFalse;
+boolean ff;
+boolean t;
+void testVarious() {
+    if ((l[integer] == 1)) {
+    }
+    if ((trueOrFalse[boolean] == true)) {
+    }
+    else {
+    }
+}
+
+integer a;
+integer b;
+integer p;
+void testAssignments() {
+    a[integer] = 7;
+    b[integer] = 12;
+    p[integer] = (a[integer] + b[integer]);
+}
+
+void declInFunc() {
+    integer int;
+}
+
+boolean testWhile() {
+    integer m;
+    m[integer] = 10;
+    while ((m[integer] < 10)) {
+        m[integer]++;
+    }
 }
 

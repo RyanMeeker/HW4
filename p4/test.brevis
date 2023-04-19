@@ -29,11 +29,21 @@
 //                   of any information you find.
 //////////////////////////// 80 columns wide //////////////////////////////////
 
+// Test.brevis
+// All intput should parse and print correctly without errors
+// Test record declaration
+
 record Point (
     integer x;
     integer y;
 );
+ 
+
+record Point pt;
+integer l; 
+//fun declaration
 integer f(integer x, boolean b) { }
+
 void g() {
     integer a;
     boolean b;
@@ -43,3 +53,50 @@ void g() {
     f(a + p.y*2, b);
     g();
 }
+
+// boolean tests
+boolean trueOrFalse;
+boolean ff;
+boolean t;
+
+
+void testVarious() {
+	//test if
+	if(l==1){
+	}
+
+	//test if else
+	if(trueOrFalse==true){
+	
+	} else {
+	
+	}
+}
+ 
+
+// Addition/subtraction
+
+integer a;
+integer b;
+integer p;
+
+void testAssignments(){
+	a = 7;
+	b = 12;
+	p = a + b;
+}
+
+void declInFunc(){
+	integer int;
+}
+
+// while
+
+boolean testWhile(){
+	integer m;
+	m = 10;
+	while(m < 10){
+		m++;
+	}
+}
+
