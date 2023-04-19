@@ -1,0 +1,4 @@
+record RealRecord(
+    integer u;
+);
+

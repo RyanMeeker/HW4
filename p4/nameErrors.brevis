@@ -1,36 +1,76 @@
+///////////////////////////////////////////////////////////////////////////////
+//                   ALL STUDENTS COMPLETE THESE SECTIONS
+// Main Class File:  ast.java
+// File:             nameErrors.brevis
+// Semester:         CS536 Spring 2023
+//
+// Author:           Arun Balaji - abalaji7@wisc.edu
+// CS Login:         abalaji
+// Lecturer's Name:  Beck Hasti
+// Lab Section:      002
+//
+//////////////////// PAIR PROGRAMMERS COMPLETE THIS SECTION ////////////////////
+//
+// Pair Partner:     Ryan Meeker
+// Email:            rtmeeker@wisc.edu
+// CS Login:         meeker
+// Lecturer's Name:  Beck Hasti
+// Lab Section:      002
+//
+//////////////////// STUDENTS WHO GET HELP FROM OTHER THAN THEIR PARTNER //////
+//                   fully acknowledge and credit all sources of help,
+//                   other than Instructors and TAs.
+//
+// Persons:          Identify persons by name, relationship to you, and email.
+//                   Describe in detail the the ideas and help they provided.
+//
+// Online sources:   avoid web searches to solve your problems, but if you do
+//                   search, be sure to include Web URLs and description of 
+//                   of any information you find.
+//////////////////////////// 80 columns wide //////////////////////////////////
+
+//good record which I'll multiply declare later
+record RealRecord(
+	integer u;
+);
+
 
 //bad record type def
-record Point pt;
+//record Point pt;
 
 //non-function void
-void x;
+//void x;
+
+//multiply declared record
+//record RealRecord rr;
+//record RealRecord rr;
 
 //should throw void error then multiply declared error
-integer y;
-void y;
+//integer y;
+//void y;
 
 //should throw void error + mutiply declared error for formals
-void g(integer y, void y){
+//void g(integer y, void y){
 
 	//should throw multiply declared for the following variables
-	boolean c;
-	integer c;
+//	boolean c;
+//	integer c;
 
 	//should throw void+multiply declared for following variables
-	boolean d;
-	void d;
-}
+//	boolean d;
+//	void d;
+//}
 
 
 //should throw multiply declared because there's a previously declared func g
-void g(boolean c, integer d){
+//void g(boolean c, integer d){
 
-}
+//}
 
-boolean f(integer l, integer m){
+//boolean f(integer l, integer m){
 	//should throw identifier undeclared error
-	t = 12;
-}
+//	t = 12;
+//}
 
 
 

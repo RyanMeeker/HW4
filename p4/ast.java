@@ -1,6 +1,47 @@
 import java.io.*;
 import java.util.*;
 //fadded cdode:
+///////////////////////////////////////////////////////////////////////////////
+//                   ALL STUDENTS COMPLETE THESE SECTIONS
+// Title:            P4 Name Analyzer
+// Files:            ast.java, ErrMsg.java, Sym.java, P4.java, nameErrors.brevis, test.brevis
+// Semester:         (course) Spring 2016
+//
+// Author:           Arun Balaji
+// Email:            abalaji7@wisc.edu
+// CS Login:         abalaji
+// Lecturer's Name:  Beck Hasti
+// Lab Section:      002
+//
+//////////////////// PAIR PROGRAMMERS COMPLETE THIS SECTION ////////////////////
+//
+//                   CHECK ASSIGNMENT PAGE TO see IF PAIR-PROGRAMMING IS ALLOWED
+//                   If pair programming is allowed:
+//                   1. Read PAIR-PROGRAMMING policy (in cs302 policy) 
+//                   2. choose a partner wisely
+//                   3. REGISTER THE TEAM BEFORE YOU WORK TOGETHER 
+//                      a. one partner creates the team
+//                      b. the other partner must join the team
+//                   4. complete this section for each program file.
+//
+// Pair Partner:     Ryan Meeker
+// Email:            rtmeeker@wisc.edu
+// CS Login:         meeker
+// Lecturer's Name:  Beck Hasti
+// Lab Section:      002
+//
+//////////////////// STUDENTS WHO GET HELP FROM OTHER THAN THEIR PARTNER //////
+//                   must fully acknowledge and credit those sources of help.
+//                   Instructors and TAs do not have to be credited here,
+//                   but tutors, roommates, relatives, strangers, etc do.
+//
+// Persons:          Identify persons by name, relationship to you, and email.
+//                   Describe in detail the the ideas and help they provided.
+//
+// Online sources:   avoid web searches to solve your problems, but if you do
+//                   search, be sure to include Web URLs and description of 
+//                   of any information you find.
+//////////////////////////// 80 columns wide //////////////////////////////////
 // **********************************************************************
 // The ASTnode class defines the nodes of the abstract-syntax tree that
 // represents a brevis program.
@@ -322,17 +363,17 @@ class VarDeclNode extends DeclNode {
 	sym = symtab.lookupLocal(myId.getStrVal());
 	if(sym != null &&  myType instanceof VoidNode){
 		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Non-function declared void");
-		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Identifier multiply declared");
+		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Identifier multiply-declared");
 		multDecl = true;
 		return;
 	}
 	if(sym != null){
-		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Identifier multiply declared");
+		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Identifier multiply-declared");
 		multDecl = true;
  		return;  
 	}  
 	} catch(SymTabEmptyException e){
-		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Unexpected SymTabEmptyException thrown");
+		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "SymTabEmptyException Thrown in VarDecl");
 	}
 
 	
@@ -345,21 +386,15 @@ class VarDeclNode extends DeclNode {
 		//global lookup to make sure that record type has alread been declared
 		try{
 		sym = globalSymTab.lookupGlobal(recordId.getStrVal());
-		System.out.println("VarDeclNode global lookup on");
-		System.out.println("Looking up: " + recordId.getStrVal()); 
-		System.out.println("In : "); 
-		globalSymTab.print();
-		if(sym != null){
-			System.out.println("Resulting sym: " + sym.toString());
-		}
+		//globalSymTab.print();
 		//if the record type has not already been declared then error out
 		if(sym == null || !(sym instanceof RecordDefSym)){
-			ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Invalid name of record type");
+			ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Name of record type invalid");
 			return;
 		}
 	
 		} catch(SymTabEmptyException e){
-			ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Unexpected SymTabEmptyException thrown");
+			ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "SymTabEmptyException Thrown in VarDecl");
 			}
 		
 		 
@@ -378,9 +413,9 @@ class VarDeclNode extends DeclNode {
 			symtab.addDecl(myId.getStrVal(), sym);
 
 		} catch (SymDuplicationException e){
-			ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Unexpected SymDuplicationException thrown in VDN");
+			ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "SymDuplicationException thrown in VDN");
 		} catch (SymTabEmptyException e){
-			ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Unexpected SymTabEmptyException thrown in VDN");
+			ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "SymTabEmptyException thrown in VDN");
 		}
 	}
 
@@ -420,7 +455,7 @@ class FnDeclNode extends DeclNode {
 	} catch (SymDuplicationException e) {
 	    ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Identifier multiply-declared");
 	} catch (SymTabEmptyException e){
-	     ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "EmptyException in FnNode");
+	     ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "SymTabEmptyException thrown in FnNode");
 	}
 	
 	symtab.addScope();
@@ -432,7 +467,7 @@ class FnDeclNode extends DeclNode {
 	try {
 	    symtab.removeScope();
 	} catch (SymTabEmptyException e) { 
-	    ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "EmptyException in FnNode when removing scope");
+	    ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "SymTabEmptyException thrown in FnNode");
 	}
     }
     // 4 children
@@ -472,7 +507,7 @@ class FormalDeclNode extends DeclNode {
 	    } catch (SymDuplicationException e){
 		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Identifier multiply-declared");
 	    } catch (SymTabEmptyException e) {
-		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "FormalDeclNode Exception");
+		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "SymTabEmptyException thrown in DeclNode");
 	    } 
 
 }		
@@ -501,12 +536,12 @@ class RecordDeclNode extends DeclNode {
 	try{
 // a recommended approach is to have a separate symbol table associated with each record definition 
 // and to store this symbol table in the symbol for the name of the record type.
-		System.out.println("Entering into RecDeclNode name Analysis");
-		System.out.println("symtab = ");
-		symtab.print();
+		//System.out.println("Entering into RecDeclNode name Analysis");
+		//System.out.println("symtab = ");
+		//symtab.print();
 		
 		String name = myId.getStrVal();
-		System.out.println("Name: " + name);
+		//System.out.println("Name: " + name);
 
 		Sym sym = symtab.lookupLocal(myId.getStrVal()); // Check for duplicates		
 		// if no duplicates, create a new symtab for this record
@@ -520,17 +555,17 @@ class RecordDeclNode extends DeclNode {
 		// Make sure field is not in record's symTab
                 RecordDefSym recordefsym = new RecordDefSym(newSymTab, myId.getStrVal());
 //		System.out.print("RecordDefSym:");	
-		recordefsym.print();		
+	//	recordefsym.print();		
 		// Finally, add symtab
 		symtab.addDecl(name, recordefsym);
-		System.out.println("SymTab after addDecl for record");
-		newSymTab.print();
+	//	System.out.println("SymTab after addDecl for record");
+	//	newSymTab.print();
 		
 
 	} catch (SymDuplicationException e){
 		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "Identifier multiply-declared");
 	} catch (SymTabEmptyException e) {
-		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "SymTab Empty Exception");
+		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(), "SymTabEmpty Exception");
 	    	} 
 	}
  
@@ -693,7 +728,7 @@ class IfStmtNode extends StmtNode {
 	try{
 		symtab.removeScope();
 	} catch(SymTabEmptyException e){
-		System.out.println("Unexpected SymTabEmptyException thrown in IfStmtNode nameanalysis");
+		System.out.println("Unexpected SymTabEmptyException thrown in IfStmtNode");
 		System.exit(-1);
 	}
     }
@@ -961,7 +996,16 @@ class IdNode extends ExpNode {
     }
 
     public void unparse(PrintWriter p, int indent) {
-        p.print(myStrVal);
+	p.print(myStrVal);
+	if(symLink != null && !(symLink instanceof FnSym)){
+		p.print("[" + symLink.getType()+ "]");
+    	}
+	if(symLink instanceof FnSym){
+		List<String> formals =  (((FnSym)symLink).getFormals());
+		String retType = (((FnSym)symLink).getRetType());
+		String formalsList = ((FnSym)symLink).getFormalsString();
+		p.print("[" + formalsList + "->" + retType + "]"); 
+	}
     }
 
     public int getLineNum(){
